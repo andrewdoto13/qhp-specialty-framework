@@ -213,3 +213,7 @@ CMS QHP Certification Network Adequacy materials:
 https://www.qhpcertification.cms.gov/QHP/applicationmaterials/Network-Adequacy
 
 File: `PY2027-NA-Provider-Specialty-Framework-Matrices-v1-0-v1.xlsx`
+
+---
+
+Built with Qwen 3.6 27B (MTP) running locally via [Hermes Agent](https://github.com/nousresearch/hermes-agent).
