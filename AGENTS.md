@@ -52,6 +52,14 @@ docs/                   # BUILD_WALKTHROUGH.md
 - `convenience.py` builds a reverse code index on first call — it's lazy-loaded
 - Unknown codes produce warnings, not errors
 
+## Do not
+
+- Add new specialty codes without verifying against the CMS source Excel file (`data/`)
+- Change grouping enum values in `models.py` — they must match CMS terminology exactly
+- Modify `data.py` constants without updating `convenience.py`'s reverse code index builder
+- Introduce new dependencies without adding them to `pyproject.toml`
+- Skip tests when changing validation logic in `validate.py` — each grouping has dedicated tests
+
 ## Dependencies
 
 - Runtime: `openpyxl` (for loading CMS Excel matrices)
