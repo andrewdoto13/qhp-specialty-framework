@@ -23,6 +23,17 @@ from qhp_specialty_framework.data import (
 _PHYSICIAN_NAMES = {**PHYSICIAN_SPECIALTIES, **PHYSICIAN_FALLBACK, **PHYSICIAN_SUBSPECIALTIES}
 _SURGEON_NAMES = {**SURGEON_SPECIALTIES, **SURGEON_SUBSPECIALTIES}
 _DENTIST_NAMES = {**DENTIST_SPECIALTIES, **DENTIST_SUBSPECIALTIES}
+# Master lookup: every specialty code regardless of grouping
+_ALL_NAMES = {
+    **_PHYSICIAN_NAMES,
+    **_SURGEON_NAMES,
+    **_DENTIST_NAMES,
+    **ADVANCED_PRACTITIONER_SPECIALTIES,
+    **ADVANCED_PRACTITIONER_BH_SPECIALTIES,
+    **BEHAVIORAL_HEALTH_SPECIALTIES,
+    **BEHAVIORAL_HEALTH_SUBSPECIALTIES,
+    **ALLIED_HEALTH_SPECIALTIES,
+}
 from qhp_specialty_framework.matrices import CompatibilityMatrices
 from qhp_specialty_framework.models import (
     ProviderGrouping,
@@ -133,8 +144,8 @@ def _validate_physician(
     for i, code_a in enumerate(specialties):
         for code_b in specialties[i + 1:]:
             if not matrices.are_specialties_compatible(code_a, code_b):
-                name_a = _PHYSICIAN_NAMES.get(code_a, code_a)
-                name_b = _PHYSICIAN_NAMES.get(code_b, code_b)
+                name_a = _ALL_NAMES.get(code_a, code_a)
+                name_b = _ALL_NAMES.get(code_b, code_b)
                 result.add_error(
                     "NA V14",
                     f"Specialties '{name_a}' ({code_a}) and '{name_b}' ({code_b}) "
@@ -155,7 +166,7 @@ def _validate_physician(
                 compatible_with_any = True
                 break
         if not compatible_with_any and specialties:
-            sub_name = _PHYSICIAN_NAMES.get(sub_code, sub_code)
+            sub_name = _ALL_NAMES.get(sub_code, sub_code)
             result.add_error(
                 "NA V15",
                 f"Subspecialty '{sub_name}' ({sub_code}) is not compatible with any "
