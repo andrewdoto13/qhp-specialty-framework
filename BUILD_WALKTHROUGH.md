@@ -141,18 +141,36 @@ Oncology-Surgical/Medical (021) is a subspecialty — "Also may select" in addit
 
 ## Step 7: Building the Python Module
 
-The final module (`qhp_specialty_framework.py`) implements:
+The final module (`qhp_specialty_framework.py`, 1087 lines) has three layers:
 
-1. **`classify_provider()`** — applies the flowchart decision tree
-2. **`validate_provider()`** — runs grouping-specific validation rules
-3. **`CompatibilityMatrices`** — loads and queries the Y/N grids (from Excel or hardcoded)
-4. **Grouping-specific validators** — physician, surgeon, dentist, advanced practitioner, behavioral health, allied health
+### Layer 1: Data (lines 1–156)
+All 53 specialty codes organized by grouping in `{code: name}` dictionaries. Surgeon codes split into Set 1 (8 codes) and Set 2 (2 codes).
 
-Each validator enforces the specialty count limits and compatibility rules from the flowchart and matrices.
+### Layer 2: Core engine (lines 159–733)
+- **`classify_provider()`** — applies the flowchart decision tree (boolean credential flags → grouping)
+- **`validate_provider()`** — orchestrator: checks grouping matches credentials, dispatches to grouping-specific validator
+- **`CompatibilityMatrices`** — loads Y/N grids from Excel or hardcoded data; two query methods
+- **6 grouping-specific validators** — each enforces specialty count limits and compatibility rules
+
+### Layer 3: Convenience API (lines 749–924)
+**`validate_specialty_codes(codes)`** — the function you actually use. Takes a list of codes, does everything automatically:
+1. Builds a reverse index mapping each code → (grouping, is_subspecialty)
+2. Separates specialties from subspecialties
+3. Infers the grouping from the codes
+4. Builds a `ProviderRecord` and calls `validate_provider`
+
+```python
+from qhp_specialty_framework import validate_specialty_codes
+
+result = validate_specialty_codes(["003", "008"])
+# Automatically: 003→specialty, 008→subspecialty, grouping→Physician
+# Checks: max 2 specialties ✓, max 1 subspecialty ✓, matrix compat ✓
+print(result.is_valid)  # True
+```
 
 ## Step 8: Testing
 
-12 test cases covering all 7 provider groupings, including edge cases:
+### Built-in demo (12 cases)
 
 | # | Scenario | Result |
 |---|---|---|
@@ -169,15 +187,29 @@ Each validator enforces the specialty count limits and compatibility rules from 
 | 11 | Physician, 3 specialties (max 2) | ✗ Count exceeded |
 | 12 | Family Med + Cardiology subspecialty | ✗ Sub not compatible with specialty |
 
+### Interactive test cases (user-provided)
+
+| Codes | Grouping | Result | Detail |
+|---|---|---|---|
+| `016, 034` | Surgeon | ✗ Invalid | Set 1 (Gynecology) + Set 2 (Vascular) — cannot mix |
+| `003, 008` | Physician | ✓ Valid | Internal Medicine + Cardiology subspecialty |
+| `201, P201, 203` | Dentist | ✓ Valid | 2 specialties + 1 subspecialty |
+| `201, 202` | Dentist | ✓ Valid | 1 specialty + 1 subspecialty |
+| `003, 007, 031` | Physician | ✓ Valid | 2 specialties (IM + Allergy) + 1 subspecialty (Rheumatology) |
+| `002, 003, 037` | Physician | ✗ Invalid | 3 specialties exceeds max of 2 + warning about primary care subtypes |
+
 ## Files
 
 | File | Description |
 |---|---|
-| `qhp_specialty_framework.py` | Python module with all logic and tests |
+| `qhp_specialty_framework.py` | Python module (1087 lines) — all logic, data, and validation |
 | `PY2027_NA_Template.xlsx` | CMS NA Template (authoritative specialty codes) |
-| `framework_flowchart.png` | Rendered flowchart (6167×1435) |
-| `framework_flowchart.svg` | Intermediate SVG from EMF conversion |
+| `framework_flowchart.png` | Rendered flowchart (6167×1435, 1.4MB) |
+| `framework_flowchart.svg` | Intermediate SVG from EMF conversion (284KB) |
 | `BUILD_WALKTHROUGH.md` | This document |
+| `README.md` | Project overview and quick start |
+| `requirements.txt` | Python dependencies (`openpyxl`) |
+| `.gitignore` | Python/venv exclusions |
 
 ## Key Takeaways
 
@@ -185,3 +217,4 @@ Each validator enforces the specialty count limits and compatibility rules from 
 - **Salesforce SPA downloads:** Parse the JavaScript redirect handler to get the actual file URL.
 - **EMF text extraction:** UTF-16LE string regex works for recovering labels, but you lose spatial layout — you need the rendered image to see groupings.
 - **53 specialty codes** total across all groupings, plus 15 facility codes in the NA Template.
+- **The convenience function** (`validate_specialty_codes`) is the right API — pass codes, get validation back. No need to manually separate specialties/subspecialties or pick groupings.
