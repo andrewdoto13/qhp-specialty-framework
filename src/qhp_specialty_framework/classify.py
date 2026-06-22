@@ -1,6 +1,6 @@
 """Classify provider into grouping (flowchart decision tree logic)."""
 
-from qhp_specialty_framework._models import ProviderGrouping
+from qhp_specialty_framework.models import ProviderGrouping
 
 
 def classify_provider(

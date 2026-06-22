@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from qhp_specialty_framework._classify import classify_provider
-from qhp_specialty_framework._data import (
+from qhp_specialty_framework.classify import classify_provider
+from qhp_specialty_framework.data import (
     ALLIED_HEALTH_SPECIALTIES,
     ADVANCED_PRACTITIONER_BH_SPECIALTIES,
     ADVANCED_PRACTITIONER_SPECIALTIES,
@@ -20,13 +20,13 @@ from qhp_specialty_framework._data import (
     SURGEON_SPECIALTIES_SET2,
     SURGEON_SUBSPECIALTIES,
 )
-from qhp_specialty_framework._matrices import CompatibilityMatrices
-from qhp_specialty_framework._models import (
+from qhp_specialty_framework.matrices import CompatibilityMatrices
+from qhp_specialty_framework.models import (
     ProviderGrouping,
     ProviderRecord,
     ValidationResult,
 )
-from qhp_specialty_framework._validate import validate_provider
+from qhp_specialty_framework.validate import validate_provider
 
 # Reverse lookup: code → (grouping, is_subspecialty)
 _CODE_TO_GROUPING: dict[str, tuple[ProviderGrouping, bool]] = {}

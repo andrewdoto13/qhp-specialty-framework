@@ -6,16 +6,16 @@ compatibility validation matrices from:
   https://www.qhpcertification.cms.gov/QHP/applicationmaterials/Network-Adequacy
 """
 
-from qhp_specialty_framework._classify import classify_provider
-from qhp_specialty_framework._matrices import CompatibilityMatrices
-from qhp_specialty_framework._models import (
+from qhp_specialty_framework.classify import classify_provider
+from qhp_specialty_framework.matrices import CompatibilityMatrices
+from qhp_specialty_framework.models import (
     ProviderGrouping,
     ProviderRecord,
     ValidationError,
     ValidationResult,
 )
-from qhp_specialty_framework._validate import validate_provider, validate_providers
-from qhp_specialty_framework._convenience import validate_specialty_codes
+from qhp_specialty_framework.validate import validate_provider, validate_providers
+from qhp_specialty_framework.convenience import validate_specialty_codes
 
 __all__ = [
     "classify_provider",

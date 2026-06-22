@@ -12,6 +12,10 @@ Validates provider specialty/subspecialty combinations against the CMS framework
 
 ## Quick start
 
+```bash
+pip install -e .
+```
+
 ```python
 from qhp_specialty_framework import validate_specialty_codes
 
@@ -24,19 +28,46 @@ print(result.is_valid)  # False — Surgeon Set 1 + Set 2 mix
 ```
 
 The function automatically:
-1. Separates specialties from subspecialties
-2. Infers the provider grouping from the codes
-3. Validates against all framework rules
+1. **Separates** specialties from subspecialties
+2. **Infers** the provider grouping from the codes
+3. **Validates** the combination against all framework rules
+4. **Returns** errors/warnings
 
-## Files
+## API
 
-| File | Description |
+| Function | Description |
 |---|---|
-| `qhp_specialty_framework.py` | Main module — all logic, data, and validation |
-| `PY2027_NA_Template.xlsx` | CMS NA Template (source for specialty codes) |
-| `framework_flowchart.png` | Rendered flowchart from the embedded EMF image |
-| `framework_flowchart.svg` | Intermediate SVG from EMF conversion |
-| `BUILD_WALKTHROUGH.md` | Detailed walkthrough of how this was built |
+| `validate_specialty_codes(codes)` | Convenience API — pass codes, get result |
+| `validate_provider(provider, matrices)` | Validate a ProviderRecord |
+| `classify_provider(**credentials)` | Apply flowchart decision tree |
+
+## Tests
+
+```bash
+pip install -e ".[dev]"
+pytest -v
+```
+
+33 tests across 3 test files.
+
+## Project structure
+
+```
+src/qhp_specialty_framework/
+├── __init__.py         # Public API exports
+├── models.py           # Enums, dataclasses
+├── data.py             # 53 specialty codes
+├── matrices.py         # CompatibilityMatrices
+├── classify.py         # Flowchart decision tree
+├── validate.py         # 6 grouping validators
+└── convenience.py      # validate_specialty_codes()
+tests/
+├── test_classify.py    # 9 tests
+├── test_validate.py    # 11 tests
+└── test_convenience.py # 13 tests
+data/                   # Source files (NA Template, flowchart)
+docs/                   # BUILD_WALKTHROUGH.md
+```
 
 ## Source data
 
