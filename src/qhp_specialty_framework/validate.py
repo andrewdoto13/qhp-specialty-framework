@@ -17,6 +17,12 @@ from qhp_specialty_framework.data import (
     SURGEON_SPECIALTIES_SET2,
     SURGEON_SUBSPECIALTIES,
 )
+
+# Unified name lookups: specialty code → human-readable name
+# Covers all codes in each grouping so error messages always show names
+_PHYSICIAN_NAMES = {**PHYSICIAN_SPECIALTIES, **PHYSICIAN_FALLBACK, **PHYSICIAN_SUBSPECIALTIES}
+_SURGEON_NAMES = {**SURGEON_SPECIALTIES, **SURGEON_SUBSPECIALTIES}
+_DENTIST_NAMES = {**DENTIST_SPECIALTIES, **DENTIST_SUBSPECIALTIES}
 from qhp_specialty_framework.matrices import CompatibilityMatrices
 from qhp_specialty_framework.models import (
     ProviderGrouping,
@@ -127,8 +133,8 @@ def _validate_physician(
     for i, code_a in enumerate(specialties):
         for code_b in specialties[i + 1:]:
             if not matrices.are_specialties_compatible(code_a, code_b):
-                name_a = PHYSICIAN_SPECIALTIES.get(code_a, code_a)
-                name_b = PHYSICIAN_SPECIALTIES.get(code_b, code_b)
+                name_a = _PHYSICIAN_NAMES.get(code_a, code_a)
+                name_b = _PHYSICIAN_NAMES.get(code_b, code_b)
                 result.add_error(
                     "NA V14",
                     f"Specialties '{name_a}' ({code_a}) and '{name_b}' ({code_b}) "
@@ -149,7 +155,7 @@ def _validate_physician(
                 compatible_with_any = True
                 break
         if not compatible_with_any and specialties:
-            sub_name = PHYSICIAN_SUBSPECIALTIES.get(sub_code, sub_code)
+            sub_name = _PHYSICIAN_NAMES.get(sub_code, sub_code)
             result.add_error(
                 "NA V15",
                 f"Subspecialty '{sub_name}' ({sub_code}) is not compatible with any "
@@ -164,7 +170,7 @@ def _validate_physician(
             if code in primary_care_subtypes:
                 result.add_warning(
                     "NA V13",
-                    f"Primary Care subtype '{PHYSICIAN_SPECIALTIES.get(code, code)}' "
+                    f"Primary Care subtype '{_PHYSICIAN_NAMES.get(code, code)}' "
                     f"listed alongside Family Medicine. Issuers should not separately list "
                     f"primary care subtypes as additional specialty types alongside Family Medicine.",
                 )
