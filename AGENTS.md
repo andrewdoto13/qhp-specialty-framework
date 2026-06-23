@@ -68,6 +68,6 @@ docs/                   # BUILD_WALKTHROUGH.md
 ## Running
 
 ```bash
-pip install -e .
+pip install -e ".[dev]"
 python -m pytest -v
 ```

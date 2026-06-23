@@ -139,6 +139,8 @@ for codes, label in providers:
 
 ## Quick start
 
+Requires **Python 3.10+** (uses native type union syntax).
+
 ```bash
 pip install -e .
 ```
