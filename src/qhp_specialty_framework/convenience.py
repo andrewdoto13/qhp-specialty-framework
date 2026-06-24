@@ -37,37 +37,25 @@ def _build_code_index() -> None:
     if _CODE_TO_GROUPING:
         return
 
-    for code in SURGEON_SPECIALTIES_SET1:
-        _CODE_TO_GROUPING[code] = (ProviderGrouping.SURGEON, False)
-    for code in SURGEON_SPECIALTIES_SET2:
-        _CODE_TO_GROUPING[code] = (ProviderGrouping.SURGEON, False)
-    for code in SURGEON_SUBSPECIALTIES:
-        _CODE_TO_GROUPING[code] = (ProviderGrouping.SURGEON, True)
-
-    for code in PHYSICIAN_SPECIALTIES:
-        _CODE_TO_GROUPING[code] = (ProviderGrouping.PHYSICIAN, False)
-    for code in PHYSICIAN_FALLBACK:
-        _CODE_TO_GROUPING[code] = (ProviderGrouping.PHYSICIAN, False)
-    for code in PHYSICIAN_SUBSPECIALTIES:
-        _CODE_TO_GROUPING[code] = (ProviderGrouping.PHYSICIAN, True)
-
-    for code in DENTIST_SPECIALTIES:
-        _CODE_TO_GROUPING[code] = (ProviderGrouping.DENTIST, False)
-    for code in DENTIST_SUBSPECIALTIES:
-        _CODE_TO_GROUPING[code] = (ProviderGrouping.DENTIST, True)
-
-    for code in ADVANCED_PRACTITIONER_SPECIALTIES:
-        _CODE_TO_GROUPING[code] = (ProviderGrouping.ADVANCED_PRACTITIONER, False)
-    for code in ADVANCED_PRACTITIONER_BH_SPECIALTIES:
-        _CODE_TO_GROUPING[code] = (ProviderGrouping.ADVANCED_PRACTITIONER, False)
-
-    for code in BEHAVIORAL_HEALTH_SPECIALTIES:
-        _CODE_TO_GROUPING[code] = (ProviderGrouping.BEHAVIORAL_HEALTH, False)
-    for code in BEHAVIORAL_HEALTH_SUBSPECIALTIES:
-        _CODE_TO_GROUPING[code] = (ProviderGrouping.BEHAVIORAL_HEALTH, True)
-
-    for code in ALLIED_HEALTH_SPECIALTIES:
-        _CODE_TO_GROUPING[code] = (ProviderGrouping.ALLIED_HEALTH, False)
+    # ponytail: dict comp replaces 40 lines of explicit loops
+    mappings: list[tuple[dict[str, str], ProviderGrouping, bool]] = [
+        (SURGEON_SPECIALTIES_SET1, ProviderGrouping.SURGEON, False),
+        (SURGEON_SPECIALTIES_SET2, ProviderGrouping.SURGEON, False),
+        (SURGEON_SUBSPECIALTIES, ProviderGrouping.SURGEON, True),
+        (PHYSICIAN_SPECIALTIES, ProviderGrouping.PHYSICIAN, False),
+        (PHYSICIAN_FALLBACK, ProviderGrouping.PHYSICIAN, False),
+        (PHYSICIAN_SUBSPECIALTIES, ProviderGrouping.PHYSICIAN, True),
+        (DENTIST_SPECIALTIES, ProviderGrouping.DENTIST, False),
+        (DENTIST_SUBSPECIALTIES, ProviderGrouping.DENTIST, True),
+        (ADVANCED_PRACTITIONER_SPECIALTIES, ProviderGrouping.ADVANCED_PRACTITIONER, False),
+        (ADVANCED_PRACTITIONER_BH_SPECIALTIES, ProviderGrouping.ADVANCED_PRACTITIONER, False),
+        (BEHAVIORAL_HEALTH_SPECIALTIES, ProviderGrouping.BEHAVIORAL_HEALTH, False),
+        (BEHAVIORAL_HEALTH_SUBSPECIALTIES, ProviderGrouping.BEHAVIORAL_HEALTH, True),
+        (ALLIED_HEALTH_SPECIALTIES, ProviderGrouping.ALLIED_HEALTH, False),
+    ]
+    for codes, grouping, is_sub in mappings:
+        for code in codes:
+            _CODE_TO_GROUPING[code] = (grouping, is_sub)
 
 
 def validate_specialty_codes(
@@ -161,24 +149,11 @@ def validate_specialty_codes(
     assert provider_grouping is not None
 
     # Build a ProviderRecord and validate
-    is_md_or_do = provider_grouping in (
-        ProviderGrouping.PHYSICIAN, ProviderGrouping.SURGEON
-    )
-    is_surgeon = provider_grouping == ProviderGrouping.SURGEON
-    is_dentist = provider_grouping == ProviderGrouping.DENTIST
-    is_np_or_pa = provider_grouping == ProviderGrouping.ADVANCED_PRACTITIONER
-    is_behavioral_health = provider_grouping == ProviderGrouping.BEHAVIORAL_HEALTH
-
     provider = ProviderRecord(
         npi="",
         provider_grouping=provider_grouping,
         specialties=specialties,
         subspecialties=subspecialties,
-        is_md_or_do=is_md_or_do,
-        is_surgeon=is_surgeon,
-        is_dentist=is_dentist,
-        is_np_or_pa=is_np_or_pa,
-        is_behavioral_health=is_behavioral_health,
     )
 
     result = validate_provider(provider, matrices)

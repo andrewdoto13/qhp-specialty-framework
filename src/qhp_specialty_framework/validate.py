@@ -1,6 +1,5 @@
 """Validation: apply framework rules + matrices."""
 
-from qhp_specialty_framework.classify import classify_provider
 from qhp_specialty_framework.data import (
     ALLIED_HEALTH_SPECIALTIES,
     ADVANCED_PRACTITIONER_BH_SPECIALTIES,
@@ -58,25 +57,6 @@ def validate_provider(
     result = ValidationResult(provider=provider)
 
     grouping = provider.provider_grouping
-
-    # ── NA V13: Verify grouping matches credentials ──
-    expected_grouping = classify_provider(
-        is_md_or_do=provider.is_md_or_do,
-        is_surgeon=provider.is_surgeon,
-        is_dentist=provider.is_dentist,
-        is_np_or_pa=provider.is_np_or_pa,
-        is_behavioral_health=provider.is_behavioral_health,
-        is_facility=provider.is_facility,
-    )
-    if grouping != expected_grouping:
-        result.add_error(
-            "NA V13",
-            f"Provider grouping '{grouping.value}' does not match expected "
-            f"'{expected_grouping.value}' based on credentials. "
-            f"MD/DO={provider.is_md_or_do}, Surgeon={provider.is_surgeon}, "
-            f"Dentist={provider.is_dentist}, NP/PA={provider.is_np_or_pa}, "
-            f"BehavioralHealth={provider.is_behavioral_health}",
-        )
 
     # ── Grouping-specific specialty validation ──
     specialties = provider.specialties

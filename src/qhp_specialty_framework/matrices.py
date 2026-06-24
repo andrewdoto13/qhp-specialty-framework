@@ -1,73 +1,15 @@
-"""Compatibility matrices (loaded from Excel or hardcoded)."""
+"""Compatibility matrices (hardcoded from CMS Excel)."""
 
 from __future__ import annotations
 
-from typing import Optional
-
-import openpyxl
-
 
 class CompatibilityMatrices:
-    """Loads and provides access to the specialty compatibility matrices."""
+    """Specialty compatibility matrices."""
 
-    def __init__(self, excel_path: Optional[str] = None):
-        if excel_path:
-            self._load_from_excel(excel_path)
-        else:
-            self._load_hardcoded()
-
-    def _load_from_excel(self, path: str) -> None:
-        """Load matrices from the CMS Excel file."""
-        wb = openpyxl.load_workbook(path)
-
-        # Phys Specialty Compat Matrix: rows 4-12, cols C-K
-        ws = wb["Phys Specialty Compat Matrix"]
-        self._specialty_compat: dict[tuple[str, str], bool] = {}
-
-        col_headers = []
-        for col in range(3, 12):
-            val = ws.cell(row=3, column=col).value
-            if val:
-                code = str(val).split()[0]
-                col_headers.append(code)
-
-        for row in range(4, 13):
-            row_code_cell = ws.cell(row=row, column=2).value
-            if not row_code_cell:
-                continue
-            row_code = str(row_code_cell).split()[0]
-            for i, col_code in enumerate(col_headers):
-                val = ws.cell(row=row, column=3 + i).value
-                if val in ("Y", "y", "Yes", "yes"):
-                    self._specialty_compat[(row_code, col_code)] = True
-                else:
-                    self._specialty_compat[(row_code, col_code)] = False
-
-        # Phys Subspecialty Compat Matrix: rows 4-14, cols C-K
-        ws = wb["Phys Subspecialty Compat Matrix"]
-        self._subspecialty_compat: dict[tuple[str, str], bool] = {}
-
-        col_headers = []
-        for col in range(3, 12):
-            val = ws.cell(row=3, column=col).value
-            if val:
-                code = str(val).split()[0]
-                col_headers.append(code)
-
-        for row in range(4, 15):
-            row_code_cell = ws.cell(row=row, column=2).value
-            if not row_code_cell:
-                continue
-            row_code = str(row_code_cell).split()[0]
-            for i, col_code in enumerate(col_headers):
-                val = ws.cell(row=row, column=3 + i).value
-                if val in ("Y", "y", "Yes", "yes"):
-                    self._subspecialty_compat[(row_code, col_code)] = True
-                else:
-                    self._subspecialty_compat[(row_code, col_code)] = False
+    def __init__(self):
+        self._load_hardcoded()
 
     def _load_hardcoded(self) -> None:
-        """Hardcoded matrices from the Excel file content."""
         specialty_compat_data = {
             # 002 Family Medicine
             ("002", "002"): True, ("002", "003"): True, ("002", "101"): False,

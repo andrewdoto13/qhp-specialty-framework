@@ -197,7 +197,7 @@ src/qhp_specialty_framework/
 ├── __init__.py         # Public API exports
 ├── models.py           # Enums, dataclasses (ProviderGrouping, ValidationResult)
 ├── data.py             # 53 specialty codes organized by grouping
-├── matrices.py         # CompatibilityMatrices (loaded from CMS Excel)
+├── matrices.py         # CompatibilityMatrices (hardcoded from CMS Excel)
 ├── classify.py         # Flowchart decision tree logic
 ├── validate.py         # 6 grouping-specific validators
 └── convenience.py      # validate_specialty_codes()

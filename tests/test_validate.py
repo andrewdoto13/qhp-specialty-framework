@@ -13,7 +13,6 @@ class TestPhysicianValidation:
         p = ProviderRecord(
             npi="123",
             provider_grouping=ProviderGrouping.PHYSICIAN,
-            is_md_or_do=True,
             specialties=["002"],
         )
         assert validate_provider(p, CompatibilityMatrices()).is_valid
@@ -23,7 +22,6 @@ class TestPhysicianValidation:
         p = ProviderRecord(
             npi="123",
             provider_grouping=ProviderGrouping.PHYSICIAN,
-            is_md_or_do=True,
             specialties=["029", "011"],
         )
         result = validate_provider(p, CompatibilityMatrices())
@@ -35,7 +33,6 @@ class TestPhysicianValidation:
         p = ProviderRecord(
             npi="123",
             provider_grouping=ProviderGrouping.PHYSICIAN,
-            is_md_or_do=True,
             specialties=["003"],
             subspecialties=["008"],
         )
@@ -45,7 +42,6 @@ class TestPhysicianValidation:
         p = ProviderRecord(
             npi="123",
             provider_grouping=ProviderGrouping.PHYSICIAN,
-            is_md_or_do=True,
             specialties=["002", "003", "037"],
         )
         result = validate_provider(p, CompatibilityMatrices())
@@ -57,7 +53,6 @@ class TestPhysicianValidation:
         p = ProviderRecord(
             npi="123",
             provider_grouping=ProviderGrouping.PHYSICIAN,
-            is_md_or_do=True,
             specialties=["002"],
             subspecialties=["008"],
         )
@@ -71,8 +66,6 @@ class TestSurgeonValidation:
         p = ProviderRecord(
             npi="123",
             provider_grouping=ProviderGrouping.SURGEON,
-            is_md_or_do=True,
-            is_surgeon=True,
             specialties=["015"],  # General Surgery
         )
         assert validate_provider(p, CompatibilityMatrices()).is_valid
@@ -81,8 +74,6 @@ class TestSurgeonValidation:
         p = ProviderRecord(
             npi="123",
             provider_grouping=ProviderGrouping.SURGEON,
-            is_md_or_do=True,
-            is_surgeon=True,
             specialties=["035", "034"],  # Cardiothoracic + Vascular
         )
         assert validate_provider(p, CompatibilityMatrices()).is_valid
@@ -91,8 +82,6 @@ class TestSurgeonValidation:
         p = ProviderRecord(
             npi="123",
             provider_grouping=ProviderGrouping.SURGEON,
-            is_md_or_do=True,
-            is_surgeon=True,
             specialties=["016", "034"],  # Gynecology (Set1) + Vascular (Set2)
         )
         result = validate_provider(p, CompatibilityMatrices())
@@ -105,7 +94,6 @@ class TestDentistValidation:
         p = ProviderRecord(
             npi="123",
             provider_grouping=ProviderGrouping.DENTIST,
-            is_dentist=True,
             specialties=["201", "P201"],
             subspecialties=["203"],
         )
@@ -115,7 +103,6 @@ class TestDentistValidation:
         p = ProviderRecord(
             npi="123",
             provider_grouping=ProviderGrouping.DENTIST,
-            is_dentist=True,
             specialties=["201"],
             subspecialties=["202"],
         )
@@ -123,13 +110,12 @@ class TestDentistValidation:
 
 
 class TestWrongGrouping:
-    def test_md_as_allied_health(self):
+    def test_grouping_properties(self):
+        """Derived booleans match grouping."""
         p = ProviderRecord(
             npi="123",
-            provider_grouping=ProviderGrouping.ALLIED_HEALTH,
-            is_md_or_do=True,
-            specialties=["049"],
+            provider_grouping=ProviderGrouping.PHYSICIAN,
         )
-        result = validate_provider(p, CompatibilityMatrices())
-        assert not result.is_valid
-        assert any("does not match expected" in e.message for e in result.errors)
+        assert p.is_md_or_do is True
+        assert p.is_surgeon is False
+        assert p.is_dentist is False

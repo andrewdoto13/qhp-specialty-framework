@@ -11,8 +11,8 @@ src/qhp_specialty_framework/
 ├── __init__.py         # Public API exports
 ├── models.py           # Enums (ProviderGrouping), dataclasses (ProviderRecord, ValidationResult, ValidationError)
 ├── data.py             # 53 specialty codes organized by grouping (Physician, Surgeon, Dentist, etc.)
-├── matrices.py         # CompatibilityMatrices — loaded from CMS Excel file
-├── classify.py         # Flowchart decision tree: credentials → ProviderGrouping
+├── matrices.py         # CompatibilityMatrices — hardcoded from CMS Excel
+├── classify.py         # Flowchart decision tree: grouping → ProviderGrouping
 ├── validate.py         # 6 grouping-specific validators + batch validation
 └── convenience.py      # validate_specialty_codes() — auto-infer grouping from codes
 tests/
@@ -49,12 +49,13 @@ docs/                   # BUILD_WALKTHROUGH.md
 - Surgeon Set 1 vs Set 2 is enforced separately — a surgeon can have 1 Set 1 specialty OR up to 2 Set 2 specialties, never both
 - Physician subspecialties must be matrix-compatible with at least one listed specialty (NA V15)
 - Physician specialty pairs must also be matrix-compatible (NA V14)
+- `ProviderRecord` derives `is_*` booleans from `provider_grouping` — no need to pass them separately
 - `convenience.py` builds a reverse code index on first call — it's lazy-loaded
 - Unknown codes produce warnings, not errors
 
 ## Do not
 
-- Add new specialty codes without verifying against the CMS source Excel file (`data/`)
+- Add new specialty codes without verifying against the CMS source data
 - Change grouping enum values in `models.py` — they must match CMS terminology exactly
 - Modify `data.py` constants without updating `convenience.py`'s reverse code index builder
 - Introduce new dependencies without adding them to `pyproject.toml`
@@ -62,7 +63,7 @@ docs/                   # BUILD_WALKTHROUGH.md
 
 ## Dependencies
 
-- Runtime: `openpyxl` (for loading CMS Excel matrices)
+- Runtime: None (stdlib only)
 - Dev: `pytest`
 
 ## Running

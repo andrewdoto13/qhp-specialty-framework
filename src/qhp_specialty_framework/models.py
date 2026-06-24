@@ -35,12 +35,33 @@ class ProviderRecord:
     provider_grouping: ProviderGrouping
     specialties: list[str] = field(default_factory=list)
     subspecialties: list[str] = field(default_factory=list)
-    is_md_or_do: bool = False
-    is_surgeon: bool = False
-    is_dentist: bool = False
-    is_np_or_pa: bool = False
-    is_behavioral_health: bool = False
-    is_facility: bool = False
+
+    @property
+    def is_md_or_do(self) -> bool:
+        return self.provider_grouping in (
+            ProviderGrouping.PHYSICIAN,
+            ProviderGrouping.SURGEON,
+        )
+
+    @property
+    def is_surgeon(self) -> bool:
+        return self.provider_grouping == ProviderGrouping.SURGEON
+
+    @property
+    def is_dentist(self) -> bool:
+        return self.provider_grouping == ProviderGrouping.DENTIST
+
+    @property
+    def is_np_or_pa(self) -> bool:
+        return self.provider_grouping == ProviderGrouping.ADVANCED_PRACTITIONER
+
+    @property
+    def is_behavioral_health(self) -> bool:
+        return self.provider_grouping == ProviderGrouping.BEHAVIORAL_HEALTH
+
+    @property
+    def is_facility(self) -> bool:
+        return self.provider_grouping == ProviderGrouping.FACILITY
 
 
 @dataclass
